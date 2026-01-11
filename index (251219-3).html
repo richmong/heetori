@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeeTori - Positive Energy Translator</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23fbbf24'/><text x='50' y='72' font-family='system-ui, sans-serif' font-weight='900' font-size='70' text-anchor='middle' fill='white'>H</text></svg>">
+    
+    <meta property="og:title" content="희토리(HeeTori) - 긍정 번역기">
+    <meta property="og:description" content="당신의 고민을 기적의 문장으로 바꿔드립니다. 긍정 에너지로 인생을 다시 써보세요!">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/F59E0B/FFFFFF?text=HeeTori+Positive+Energy">
+    <meta property="og:url" content="https://www.heetori.com">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Noto Sans KR', 'Poppins', sans-serif; background-color: #FFFBEB; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+        .float-anim { animation: float 3s ease-in-out infinite; }
+        @keyframes shine { to { background-position: 200% center; } }
+        .magic-text { background: linear-gradient(to right, #D97706 20%, #F59E0B 40%, #F59E0B 60%, #D97706 80%); background-size: 200% auto; color: #000; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
+        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #F59E0B; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <header class="w-full py-6 px-4 flex justify-between items-center max-w-2xl mx-auto">
+        <div class="inline-flex items-center gap-3 bg-white pl-2 pr-5 py-2 rounded-full shadow-sm border border-amber-100 cursor-pointer hover:scale-105 transition duration-300">
+            <div class="w-10 h-10 bg-amber-400 rounded-full flex items-center justify-center text-white font-black text-lg shadow-sm border-2 border-amber-200">H</div>
+            <div class="text-left flex flex-col justify-center">
+                <span class="font-black text-amber-600 text-sm leading-none tracking-wide">HEETORI</span>
+                <span class="text-[10px] text-slate-400 font-medium tracking-wider mt-0.5">Joy + Story</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="shareApp()" class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-sm border border-amber-100 text-amber-600 hover:bg-amber-50 hover:scale-110 transition duration-300" title="Share">
+                <i class="ph-bold ph-share-network text-lg"></i>
+            </button>
+            <div class="flex bg-white rounded-full p-1 shadow-sm border border-amber-100">
+                <button onclick="setLanguage('ko')" id="btn-ko" class="px-3 py-1 rounded-full text-xs font-bold transition-colors bg-amber-100 text-amber-700">KOR</button>
+                <button onclick="setLanguage('en')" id="btn-en" class="px-3 py-1 rounded-full text-xs font-bold transition-colors text-slate-400 hover:text-slate-600">ENG</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center px-4 sm:px-6 py-8 max-w-2xl mx-auto w-full">
+        <div class="text-center mb-10">
+            <i class="ph-duotone ph-clover text-4xl text-green-500 mb-4 float-anim inline-block"></i>
+            <h1 id="main-title" class="text-3xl sm:text-4xl font-black mb-4 leading-tight text-slate-900"></h1>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-md mx-auto" data-i18n="subtitle"></p>
+        </div>
+
+        <div class="w-full bg-white rounded-3xl shadow-xl border border-amber-100 p-6 sm:p-8 relative overflow-hidden mb-12">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-50 rounded-full blur-3xl opacity-50"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-50 rounded-full blur-3xl opacity-50"></div>
+
+            <div id="inputSection" class="relative z-10 transition-all duration-500">
+                <div class="flex justify-between items-end mb-2 ml-1">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" data-i18n="input_label">오늘의 마음 (Input)</label>
+                    <div class="flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                        <i class="ph-fill ph-lock-key"></i>
+                        <span data-i18n="security_msg">100% 익명/저장안됨</span>
+                    </div>
+                </div>
+                
+                <textarea id="translateInput" rows="3" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none text-base transition-all" placeholder="예: 요즘 일이 잘 안 풀려서 불안해. 내가 잘하고 있는 걸까?"></textarea>
+                
+                <div class="mt-3 flex items-center justify-center gap-1.5 opacity-80">
+                    <i class="ph-fill ph-shield-check text-green-500 text-base"></i>
+                    <p class="text-sm text-slate-500 font-medium leading-snug" data-i18n="security_detail">
+                        입력하신 내용은 서버에 저장되지 않으며, 번역 후 즉시 사라집니다. 안심하세요!
+                    </p>
+                </div>
+
+                <button onclick="runTranslation()" class="mt-5 w-full py-3.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white rounded-xl font-bold shadow-lg transform transition active:scale-95 flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-sparkle"></i>
+                    <span id="btnText" data-i18n="btn_translate">긍정 에너지로 번역하기</span>
+                    <div id="loader" class="loader hidden" style="border-top-color: #fff;"></div>
+                </button>
+            </div>
+
+            <div id="resultSection" class="hidden relative z-10 mt-6 pt-6 border-t border-dashed border-slate-200">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="text-xs font-bold text-indigo-500 uppercase tracking-wider" data-i18n="result_label">변환된 기적의 문장</label>
+                    <button onclick="copyToClipboard()" class="text-xs flex items-center gap-1 text-slate-400 hover:text-indigo-600 transition">
+                        <i class="ph-bold ph-copy"></i> <span data-i18n="copy">복사</span>
+                    </button>
+                </div>
+                <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 mb-4 relative shadow-inner">
+                    <i class="ph-fill ph-quotes text-indigo-200 text-4xl absolute top-2 left-2 opacity-50"></i>
+                    <p id="translatedText" class="text-lg sm:text-xl font-bold text-slate-800 leading-relaxed relative z-10 break-keep"></p>
+                </div>
+                <div class="flex gap-3 items-start bg-amber-50 p-4 rounded-xl border border-amber-100">
+                    <div class="flex-shrink-0 w-8 h-8 bg-amber-200 text-amber-700 rounded-full flex items-center justify-center text-lg"><i class="ph-fill ph-smiley"></i></div>
+                    <div>
+                        <h5 class="font-bold text-amber-800 text-xs mb-1" data-i18n="comment_label">희토리의 응원</h5>
+                        <p id="hitoriComment" class="text-sm text-slate-700 leading-snug"></p>
+                    </div>
+                </div>
+                <button onclick="resetApp()" class="mt-6 w-full py-2 text-slate-400 hover:text-slate-600 text-sm font-medium transition" data-i18n="reset">다른 고민도 번역하기 ↺</button>
+            </div>
+        </div>
+
+        <section class="w-full max-w-2xl mb-16">
+            <div class="flex items-center gap-2 mb-4 px-2"><i class="ph-fill ph-books text-amber-500 text-xl"></i><h3 class="font-bold text-slate-800 text-lg" data-i18n="book_title">영감을 주는 책들</h3></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a id="link-hawkins" href="#" target="_blank" class="block bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-indigo-200 transition group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 h-20 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0 text-indigo-300"><i class="ph-fill ph-book-open text-3xl group-hover:scale-110 transition"></i></div>
+                        <div><h4 class="font-bold text-slate-900 text-sm mb-1 group-hover:text-indigo-600 transition">David R. Hawkins</h4><p class="text-xs text-slate-500 mb-2" data-i18n="book_desc_hawkins">의식 혁명, 놓아버림 등<br>의식 성장의 필독서</p><span class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full" data-i18n="book_btn">서점 바로가기 →</span></div>
+                    </div>
+                </a>
+                <a id="link-hitori" href="#" target="_blank" class="block bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-200 transition group">
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 h-20 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-300"><i class="ph-fill ph-sparkle text-3xl group-hover:scale-110 transition"></i></div>
+                        <div><h4 class="font-bold text-slate-900 text-sm mb-1 group-hover:text-amber-600 transition">Saito Hitori</h4><p class="text-xs text-slate-500 mb-2" data-i18n="book_desc_hitori">1% 부자의 법칙, 부자의 운<br>유쾌한 성공의 지혜</p><span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full" data-i18n="book_btn">서점 바로가기 →</span></div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="w-full max-w-2xl mb-12">
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-center sm:text-left text-white shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div class="flex flex-col sm:flex-row items-center gap-6 relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-black shadow-lg flex-shrink-0 border-4 border-slate-700">H</div>
+                    <div class="w-full">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-baseline gap-2 mb-2 justify-center sm:justify-start">
+                            <h4 class="text-sm text-slate-400 font-bold uppercase tracking-wider" data-i18n="maker_label">Created by</h4>
+                            <h4 class="text-xl font-bold text-white tracking-wide" data-i18n="maker_name">고희원 (HeeTori)</h4>
+                            <span class="bg-slate-700 text-[10px] text-slate-300 px-1.5 py-0.5 rounded border border-slate-600 ml-1">Republic of Korea</span>
+                        </div>
+                        <p class="text-base text-slate-200 leading-relaxed mb-4 font-light" data-i18n="maker_desc">
+                            "기쁜 이야기(Joy+Story)를 쓰는 크리에이터입니다.<br>당신의 삶에 긍정의 기적이 일어나길 응원합니다."
+                        </p>
+                        <div class="inline-flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-700 transition duration-300">
+                            <i class="ph-fill ph-envelope-simple text-amber-400"></i>
+                            <a href="mailto:h221ko@gmail.com" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">h221ko@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="text-center text-slate-400 text-xs space-y-2 pb-8"><p>© 2025 HeeTori Project. All rights reserved.</p></div>
+    </main>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-sm shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50">Copied! ✨</div>
+
+    <script>
+        const apiKey = "AIzaSyCuZWAqZ1TyQ0vHYOjKFU3scc-_M8jxj1E"; 
+        const geminiModel = "gemini-2.5-flash-preview-09-2025"; 
+
+        let currentLang = 'ko';
+        
+        const translations = {
+            ko: {
+                html_title: "당신의 고민을 <br><span class='magic-text'>기적의 문장</span>으로 <br>바꿔드립니다",
+                subtitle: "<span class='font-bold text-amber-600'>희토리</span>가 당신의 이야기를<br>가장 운이 좋은 긍정의 언어로 번역해 드릴게요.",
+                input_label: "오늘의 마음 (Input)",
+                placeholder: "예: 요즘 일이 잘 안 풀려서 불안해. 내가 잘하고 있는 걸까?",
+                btn_translate: "긍정 에너지로 번역하기",
+                btn_loading: "기적을 만드는 중...",
+                result_label: "변환된 기적의 문장",
+                copy: "복사",
+                comment_label: "희토리의 응원",
+                reset: "다른 고민도 번역하기 ↺",
+                book_title: "영감을 주는 책들",
+                book_desc_hawkins: "의식 혁명, 놓아버림 등<br>의식 성장의 필독서",
+                book_desc_hitori: "1% 부자의 법칙, 부자의 운<br>유쾌한 성공의 지혜",
+                book_btn: "교보문고 보러가기 →",
+                maker_label: "Created by",
+                maker_name: "고희원 (HeeTori)",
+                maker_desc: "\"기쁜 이야기(Joy+Story)를 쓰는 크리에이터입니다.<br>당신의 삶에 긍정의 기적이 일어나길 응원합니다.\"",
+                toast: "복사되었습니다! ✨",
+                share_toast: "주소가 복사되었습니다! 친구에게 보내보세요 💌",
+                security_msg: "100% 익명/저장안됨",
+                security_detail: "입력하신 내용은 서버에 저장되지 않으며, 번역 후 즉시 사라집니다. 안심하세요!"
+            },
+            en: {
+                html_title: "Turn Your Worries <br>Into <span class='magic-text'>Miracles</span> <br>With Positive Energy",
+                subtitle: "<span class='font-bold text-amber-600'>HeeTori</span> translates your story<br>into the luckiest, highest-vibration language.",
+                input_label: "Your Mindset (Input)",
+                placeholder: "Ex: I'm feeling anxious about my future. Am I doing enough?",
+                btn_translate: "Translate to High Vibe",
+                btn_loading: "Creating Miracles...",
+                result_label: "Your Miracle Affirmation",
+                copy: "Copy",
+                comment_label: "HeeTori's Cheer",
+                reset: "Translate Another Thought ↺",
+                book_title: "Inspiring Books",
+                book_desc_hawkins: "Power vs Force, Letting Go.<br>Essentials for consciousness.",
+                book_desc_hitori: "The absolute rich mindset.<br>Wisdom of luck and joy.",
+                book_btn: "View on Amazon →",
+                maker_label: "Created by",
+                maker_name: "Ko Hee-Won (HeeTori)",
+                maker_desc: "\"I create Joy+Story to rewrite your life.<br>Cheering for miracles to happen in your journey.\"",
+                toast: "Copied! ✨",
+                share_toast: "Link copied! Share with friends 💌",
+                security_msg: "100% Anonymous",
+                security_detail: "Your input is NOT saved on any server and vanishes after translation. Safe & Secure!"
+            }
+        };
+
+        const bookLinks = {
+            ko: { hawkins: "https://search.kyobobook.co.kr/search?keyword=데이비드호킨스", hitori: "https://search.kyobobook.co.kr/search?keyword=사이토히토리" },
+            en: { hawkins: "https://www.amazon.com/s?k=David+R.+Hawkins", hitori: "https://www.amazon.com/s?k=Saito+Hitori" }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            if(lang === 'ko') {
+                document.getElementById('btn-ko').className = "px-3 py-1 rounded-full text-xs font-bold transition-colors bg-amber-100 text-amber-700";
+                document.getElementById('btn-en').className = "px-3 py-1 rounded-full text-xs font-bold transition-colors text-slate-400 hover:text-slate-600";
+            } else {
+                document.getElementById('btn-ko').className = "px-3 py-1 rounded-full text-xs font-bold transition-colors text-slate-400 hover:text-slate-600";
+                document.getElementById('btn-en').className = "px-3 py-1 rounded-full text-xs font-bold transition-colors bg-amber-100 text-amber-700";
+            }
+            document.getElementById('main-title').innerHTML = t.html_title;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.innerHTML = t[key];
+            });
+            document.getElementById('translateInput').placeholder = t.placeholder;
+            document.getElementById('link-hawkins').href = bookLinks[lang].hawkins;
+            document.getElementById('link-hitori').href = bookLinks[lang].hitori;
+        }
+
+        async function runTranslation() {
+            const input = document.getElementById('translateInput').value.trim();
+            if (!input) { 
+                alert(currentLang === 'ko' ? "마음을 입력해주세요!" : "Please enter your thoughts!"); 
+                document.getElementById('translateInput').focus(); 
+                return; 
+            }
+            const t = translations[currentLang];
+            document.getElementById('btnText').innerText = t.btn_loading;
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('translateInput').disabled = true;
+
+            let prompt = "";
+            if (currentLang === 'ko') {
+                prompt = `
+                    Roleplay: You are 'HeeTori', a positive energy translator.
+                    Input: "${input}"
+                    
+                    Tasks:
+                    1. Rewrite the input into a powerful, high-vibration affirmation (Level 540+ Joy).
+                    2. Provide a thoughtful comment explaining the shift in perspective.
+                    3. Incorporate the wisdom of **David Hawkins (Power vs Force)** and **Saito Hitori (Luck, Gratitude)** in your comment.
+                    4. Tone: Warm, insightful, and energetic.
+                    5. Output strictly in JSON format: {"translated": "YOUR_AFFIRMATION", "comment": "YOUR_INSIGHTFUL_COMMENT"}
+                    6. Language: Korean.
+                `;
+            } else {
+                prompt = `
+                    Roleplay: You are 'HeeTori', a positive energy translator.
+                    Input: "${input}"
+                    
+                    Tasks:
+                    1. Rewrite the input into a powerful, high-vibration affirmation (Level 540+ Joy).
+                    2. Provide a thoughtful comment explaining the shift in perspective.
+                    3. Incorporate the wisdom of **David Hawkins (Power vs Force)** and **Saito Hitori (Luck, Gratitude)** in your comment.
+                    4. Tone: Warm, insightful, and energetic.
+                    5. Output strictly in JSON format: {"translated": "YOUR_AFFIRMATION", "comment": "YOUR_INSIGHTFUL_COMMENT"}
+                    6. Language: English.
+                `;
+            }
+
+            try {
+                if (!apiKey) throw new Error("API Key Missing");
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 429) {
+                        throw new Error("Too Many Requests");
+                    }
+                    throw new Error("API Error");
+                }
+
+                const data = await response.json();
+                
+                let rawText = data.candidates[0].content.parts[0].text;
+                rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                const result = JSON.parse(rawText);
+
+                document.getElementById('translatedText').innerText = result.translated;
+                document.getElementById('hitoriComment').innerText = result.comment;
+                document.getElementById('inputSection').classList.add('opacity-50', 'pointer-events-none');
+                document.getElementById('resultSection').classList.remove('hidden');
+            } catch (error) {
+                console.error(error);
+                let errorMsg = "오류가 발생했습니다.";
+                if (currentLang === 'ko') {
+                    if (error.message === "Too Many Requests") errorMsg = "지금 사용자가 너무 많아요! 1분만 기다렸다 다시 시도해주세요 🍀";
+                    else errorMsg = "잠시 문제가 생겼어요. 새로고침 후 다시 시도해주세요!";
+                } else {
+                    if (error.message === "Too Many Requests") errorMsg = "Too many users right now! Please wait 1 min 🍀";
+                    else errorMsg = "Something went wrong. Please refresh and try again!";
+                }
+                alert(errorMsg);
+                resetApp();
+            } finally {
+                document.getElementById('btnText').innerText = t.btn_translate;
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
+
+        function resetApp() {
+            document.getElementById('translateInput').value = '';
+            document.getElementById('translateInput').disabled = false;
+            document.getElementById('inputSection').classList.remove('opacity-50', 'pointer-events-none');
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('translateInput').focus();
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(document.getElementById('translatedText').innerText).then(() => {
+                const toast = document.getElementById('toast');
+                toast.innerText = translations[currentLang].toast;
+                toast.classList.remove('opacity-0');
+                setTimeout(() => toast.classList.add('opacity-0'), 2000);
+            });
+        }
+
+        async function shareApp() {
+            const shareData = {
+                title: 'HeeTori - Positive Energy',
+                text: '당신의 고민을 기적의 문장으로 바꿔드립니다! 🍀',
+                url: window.location.href
+            };
+            if (navigator.share) {
+                try { await navigator.share(shareData); } catch (err) { console.log('Share canceled'); }
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                const toast = document.getElementById('toast');
+                toast.innerText = translations[currentLang].share_toast;
+                toast.classList.remove('opacity-0');
+                setTimeout(() => toast.classList.add('opacity-0'), 2000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('ko'); 
+        });
+    </script>
+</body>
+</html>
